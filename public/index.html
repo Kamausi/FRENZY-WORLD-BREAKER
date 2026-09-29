@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>RAMPAGE — Rebuilt Prototype v0.18.2 • Three.js / WebGL2</title>
+<title>RAMPAGE — Rebuilt Prototype v0.18.3 • Three.js / WebGL2</title>
 <style>
 :root{--ink:#101216;--cream:#f7e7c5;--yellow:#ffd447;--orange:#ff5b38;--red:#ef4038;--blue:#67c4d9;--glass:rgba(9,12,17,.72)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0a0e15;color:#fff;font-family:Impact,Haettenschweiler,"Arial Narrow Bold",sans-serif;touch-action:none}canvas{display:block;width:100%;height:100%;}
@@ -32,7 +32,7 @@
 <canvas id="game"></canvas>
 <canvas id="glGame" aria-label="Three.js WebGL2 3D game world"></canvas>
 <div id="hud">
-  <div id="logo">RAMPAGE<small>REBUILT • v0.18.2</small></div>
+  <div id="logo">RAMPAGE<small>REBUILT • v0.18.3</small></div>
   <div id="gpuStatus" aria-live="polite">CANVAS2D · STARTING</div>
   <div id="cityTag">DAY 01 · DOWNTOWN</div>
   <div id="topRight"><div id="hearts">♥ ♥ ♥ ♥ ♥</div><div>DESTRUCTION <span id="score" class="score">00000</span></div><div>RAMPAGE <span id="rampageText">0%</span></div><div id="rampageBox"><div id="rampageFill" class="rampFill"></div></div></div>
@@ -50,7 +50,7 @@
 'use strict';
 
 // ============================================================
-// RAMPAGE REBUILT — v0.18.2 WEBGL2 / THREE.JS / RIG REPAIR
+// RAMPAGE REBUILT — v0.18.3 WEBGL2 / THREE.JS / ANATOMICAL BODY PASS 1
 // One authoritative gameplay simulation. Three.js WebGL2 is primary;
 // the existing Canvas2D scene is a compatibility fallback.
 // ============================================================
@@ -782,6 +782,11 @@ const ProceduralGeometryV18={
         [[s*1.56,1.58,.18],[s*1.58,1.15,.25],.335,.30,.32,.29]
       ];
       for(const seg of arm)d=this.smoothUnion(d,this.segment(p,...seg),.185);
+      // Anatomical pass 1: sculpt contractile volumes inside the same continuous
+      // skin rather than attaching independent spheres that split at the joints.
+      // Localised unions preserve the underarm clearance and shoulder topology.
+      d=this.smoothUnion(d,e(s*1.28,2.36,.245,.22,.29,.22),.055); // compact biceps, bounded deformation
+      d=this.smoothUnion(d,e(s*1.56,1.55,.235,.29,.35,.275),.095); // forearm extensors
       d=this.smoothUnion(d,e(s*1.58,.99,.345,.28,.24,.29),.13);
       for(const offset of [-.17,0,.17]){
         const x=s*1.58+offset;
@@ -794,6 +799,8 @@ const ProceduralGeometryV18={
         [[s*.51,.56,.115],[s*.51,.17,.16],.315,.255,.31,.255]
       ];
       for(const seg of leg)d=this.smoothUnion(d,this.segment(p,...seg),.17);
+      d=this.smoothUnion(d,e(s*.50,.81,.21,.295,.31,.31),.10); // quadriceps
+      d=this.smoothUnion(d,e(s*.52,.36,-.13,.27,.305,.245),.10); // gastrocnemius
       d=this.smoothUnion(d,e(s*.52,.11,.37,.35,.155,.46),.15);
       for(const offset of [-.205,0,.205])d=this.smoothUnion(d,e(s*.52+offset,.105,.64,.095,.105,.17),.073);
     }
@@ -1671,7 +1678,7 @@ addEventListener('keyup',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')input.left
 addEventListener('resize',resize,{passive:true});document.getElementById('restart').onclick=()=>location.reload();
 
 window.__RAMPAGE_TEST__={
-  version:'0.18.2',mode:'webgl2-three-primary',get rendererMode(){return rendererMode;},get graphicsError(){return graphicsError;},MathSim,DepthLayer,state,player,buildings,debris,input,camera,performanceCore,
+  version:'0.18.3',mode:'webgl2-three-primary',get rendererMode(){return rendererMode;},get graphicsError(){return graphicsError;},MathSim,DepthLayer,state,player,buildings,debris,input,camera,performanceCore,
   characterPose:evaluateGeorgePose,characterFocusY:characterCameraFocusY,characterGeometry:ProceduralGeometryV18,
   step:update,draw:render,resize,
   setPlayer(x,y=0){player.x=x;player.y=y;player.vx=player.vy=0;player.climbing=false;player.onRoof=null;camera.x=MathSim.clamp(x-2.7,0,WORLD.maxX-8);camera.vx=0;},
